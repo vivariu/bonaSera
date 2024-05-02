@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello HomeController!{% endblock %}
+
+{% block body %}
+
+
+<div id="menu" class="dropdown">
+  
+  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Menu 
+  </button> 
+  <ul class="dropdown-menu">    {% if app.user %}
+        <div class="mb-3">
+            {{ app.user.userIdentifier }} <a href="{{ path('app_logout') }}">Me déconnecter</a>
+            {% else %}
+        <li><button class="dropdown-item" type="button"><a href="{{ path('app_login') }}">Se connecter</a>
+    {% endif %}
+    <li><button class="dropdown-item" type="button"><a href="{{ path('app_register') }}">S'inscrire</a>
+    <li><button class="dropdown-item" type="button">Something else here</button></li>
+  </ul>
+        </div>
+</div>
+ {% if app.user is not empty and is_granted("ROLE_PROPRIETAIRE") %}
+<div id="proprietaire" class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Proprietaire
+  </button>
+  <ul class="dropdown-menu">
+    <li><button class="dropdown-item" type="button">Action</button></li>
+    <li><button class="dropdown-item" type="button">Another action</button></li>
+    <li><button class="dropdown-item" type="button">Something else here</button></li>
+  </ul>
+</div>
+{% endif %} 
+<div id="proprietaire" class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Mettre son logement
+  </button>
+  <ul class="dropdown-menu">
+    <li><button class="dropdown-item" type="button"><a href="{{ path('app_logement_new') }}">Crée un logement</a>
+    <li><button class="dropdown-item" type="button"><a href="{{ path('app_logement_index') }}">Voir mon logement</a>
+    <li><button class="dropdown-item" type="button">Something else here</button></li>
+  </ul>
+</div>
+{% endblock %}

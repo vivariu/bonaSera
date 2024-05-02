@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Logement index{% endblock %}
+
+{% block body %}
+
+    <h1>Logement index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Type</th>
+                <th>Nb_voyageur</th>
+                <th>Nb_chambre</th>
+                <th>Nb_salle_de_bain</th>
+       
+                <th>actions</th>
+
+            </tr>
+        </thead>
+        <tbody>
+        {% for logement in logements %}
+            <tr>
+                <td>{{ logement.id }}</td>
+                <td>{{ logement.type }}</td>
+                <td>{{ logement.nbVoyageur }}</td>
+                <td>{{ logement.nbChambre }}</td>
+                <td>{{ logement.nbSalleDeBain }}</td>
+{#                 
+                <td>{% if logement.user is not null %}
+                <td>{{ logement.user.email }}</td>
+                     {% endif %}
+                </td> #}
+
+                <td>
+
+                    <a href="{{ path('app_logement_show', {'id': logement.id}) }}">show</a>
+                    <a href="{{ path('app_logement_edit', {'id': logement.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_logement_new') }}">Create new</a>
+
+{% endblock %}
