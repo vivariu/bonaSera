@@ -41,9 +41,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Logement::class, mappedBy: 'user')]
     private Collection $logements;
 
+    /**
+     * @var Collection<int, Reservation>
+     */
+    #[ORM\ManyToMany(targetEntity: Reservation::class, inversedBy: 'users')]
+    private Collection $reservations;
+
     public function __construct()
     {
         $this->logements = new ArrayCollection();
+        $this->reservations = new ArrayCollection();
     }
 
 
@@ -149,6 +156,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $logement->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Reservation>
+     */
+    public function getReservations(): Collection
+    {
+        return $this->reservations;
+    }
+
+    public function addReservation(Reservation $reservation): static
+    {
+        if (!$this->reservations->contains($reservation)) {
+            $this->reservations->add($reservation);
+        }
+
+        return $this;
+    }
+
+    public function removeReservation(Reservation $reservation): static
+    {
+        $this->reservations->removeElement($reservation);
 
         return $this;
     }
