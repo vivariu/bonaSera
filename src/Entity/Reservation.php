@@ -21,20 +21,15 @@ class Reservation
     #[ORM\Column(length: 255)]
     private ?string $date_fin = null;
 
-    /**
-     * @var Collection<int, User>
-     */
-    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'reservations')]
-    private Collection $users;
-
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     private ?Logement $logement = null;
 
+    #[ORM\ManyToOne(inversedBy: 'reservations')]
+    private ?User $user = null;
 
 
     public function __construct()
     {
-        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -66,32 +61,6 @@ class Reservation
         return $this;
     }
 
-    /**
-     * @return Collection<int, User>
-     */
-    public function getUsers(): Collection
-    {
-        return $this->users;
-    }
-
-    public function addUser(User $user): static
-    {
-        if (!$this->users->contains($user)) {
-            $this->users->add($user);
-            $user->addReservation($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUser(User $user): static
-    {
-        if ($this->users->removeElement($user)) {
-            $user->removeReservation($this);
-        }
-
-        return $this;
-    }
 
     public function getLogement(): ?Logement
     {
@@ -101,6 +70,18 @@ class Reservation
     public function setLogement(?Logement $logement): static
     {
         $this->logement = $logement;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }
