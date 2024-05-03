@@ -16,7 +16,7 @@
         <li><button class="dropdown-item" type="button"><a href="{{ path('app_login') }}">Se connecter</a>
     {% endif %}
     <li><button class="dropdown-item" type="button"><a href="{{ path('app_register') }}">S'inscrire</a>
-    <li><button class="dropdown-item" type="button">Something else here</button></li>
+    <li><button class="dropdown-item" type="button"><a href="{{ path('app_reservation_index') }}">Mes réservations</a>
   </ul>
         </div>
 </div>
@@ -43,6 +43,7 @@
   </ul>
 </div>
 
+
 <h1>Bienvenue sur la Page d'Accueil</h1>
 
 <h2>Logements disponibles</h2>
@@ -55,4 +56,6 @@
         </li>
     {% endfor %}
 </ul>
+
+
 {% endblock %}

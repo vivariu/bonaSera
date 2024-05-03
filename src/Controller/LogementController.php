@@ -30,7 +30,7 @@ class LogementController extends AbstractController
     {
         $user = $this->security->getUser();
         if (!$user) {
-            throw $this->createAccessDeniedException();
+            throw $this->createAccessDeniedException("Vous n'avez pas accès à cette page.");
         }
         $logements = $logementRepository->findBy(['user' => $user]); //récupère uniquement les logements de l'user connecté
         return $this->render('logement/index.html.twig', [
@@ -41,6 +41,10 @@ class LogementController extends AbstractController
     #[Route('/new', name: 'app_logement_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isGranted('IS_AUTHENTICATED_FULLY')) {  // redirige vers la page si pas connecté
+            return $this->redirectToRoute('app_login');
+        }
+
         $logement = new Logement();
         $form = $this->createForm(LogementType::class, $logement);
         $form->handleRequest($request);

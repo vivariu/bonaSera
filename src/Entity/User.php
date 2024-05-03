@@ -44,15 +44,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Reservation>
      */
-    #[ORM\ManyToMany(targetEntity: Reservation::class, inversedBy: 'users')]
+    #[ORM\OneToMany(targetEntity: Reservation::class, mappedBy: 'user')]
     private Collection $reservations;
+
 
     public function __construct()
     {
         $this->logements = new ArrayCollection();
         $this->reservations = new ArrayCollection();
     }
-
 
 
     public function getId(): ?int
@@ -172,6 +172,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->reservations->contains($reservation)) {
             $this->reservations->add($reservation);
+            $reservation->setUser($this);
         }
 
         return $this;
@@ -179,7 +180,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeReservation(Reservation $reservation): static
     {
-        $this->reservations->removeElement($reservation);
+        if ($this->reservations->removeElement($reservation)) {
+            // set the owning side to null (unless already changed)
+            if ($reservation->getUser() === $this) {
+                $reservation->setUser(null);
+            }
+        }
 
         return $this;
     }
