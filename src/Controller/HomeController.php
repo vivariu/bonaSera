@@ -30,7 +30,7 @@ class HomeController extends AbstractController
         }
 
 
-        $logements = $logementRepository->findBy(['user' => $user]);
+        $logements = $logementRepository->findAll();
 
 
         $reservations = $reservationRepository->findBy(['user' => $user]);
