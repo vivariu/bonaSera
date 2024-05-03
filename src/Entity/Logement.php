@@ -36,12 +36,17 @@ class Logement
     #[ORM\OneToMany(targetEntity: Reservation::class, mappedBy: 'logement')]
     private Collection $reservations;
 
-
+    /**
+     * @var Collection<int, Disponibilite>
+     */
+    #[ORM\OneToMany(targetEntity: Disponibilite::class, mappedBy: 'logement', cascade: ['persist'])]
+    private Collection $disponibilites;
 
 
     public function __construct()
     {
         $this->reservations = new ArrayCollection();
+        $this->disponibilites = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -133,6 +138,36 @@ class Logement
             // set the owning side to null (unless already changed)
             if ($reservation->getLogement() === $this) {
                 $reservation->setLogement(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Disponibilite>
+     */
+    public function getDisponibilites(): Collection
+    {
+        return $this->disponibilites;
+    }
+
+    public function addDisponibilite(Disponibilite $disponibilite): static
+    {
+        if (!$this->disponibilites->contains($disponibilite)) {
+            $this->disponibilites->add($disponibilite);
+            $disponibilite->setLogement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDisponibilite(Disponibilite $disponibilite): static
+    {
+        if ($this->disponibilites->removeElement($disponibilite)) {
+            // set the owning side to null (unless already changed)
+            if ($disponibilite->getLogement() === $this) {
+                $disponibilite->setLogement(null);
             }
         }
 

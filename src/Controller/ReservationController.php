@@ -55,30 +55,49 @@ class ReservationController extends AbstractController
             throw $this->createAccessDeniedException("Utilisateur non trouvé.");
         }
 
-        $logement = $entityManager->getRepository(Logement::class)->find($logementId);
-        if (!$logement) {
-            throw $this->createNotFoundException("Logement introuvable.");
+        $logement = $this->entityManager->getRepository(Logement::class)->find($logementId);
+
+        // Obtien les réservations existantes pour ce logement
+        $reservations = $this->entityManager->getRepository(Reservation::class)->findBy(['logement' => $logement]);
+
+        // Filtre les dates de réservation pour éviter le chevauchement
+        $reservedDates = [];
+        foreach ($reservations as $reservation) {
+            $reservedDates[] = [
+                'debut' => $reservation->getDateDebut(),
+                'fin' => $reservation->getDateFin(),
+            ];
         }
 
         $reservation = new Reservation();
-        $reservation->setLogement($logement); // le logement est associé a la réservation
-        $reservation->setUser($user); // l'user connecté est associé a la reservation
         $form = $this->createForm(ReservationType::class, $reservation);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Vérifie si les dates proposées ne chevauchent pas les réservations existantes
+            $dateDebut = $reservation->getDateDebut();
+            $dateFin = $reservation->getDateFin();
+
+            foreach ($reservedDates as $reservedDate) {
+                if (
+                    $dateDebut <= $reservedDate['fin'] &&
+                    $dateFin >= $reservedDate['debut']
+                ) {
+                    throw $this->createAccessDeniedException("Les dates choisies sont déjà réservées.");
+                }
+            }
+
+
+            $reservation->setLogement($logement);
+            $reservation->setUser($this->security->getUser());
             $entityManager->persist($reservation);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_reservation_show', [
-                'id' => $reservation->getId(),
-
-                // ID de la réservation créée
-            ]);
+            return $this->redirectToRoute('app_reservation_show', ['id' => $reservation->getId()]);
         }
 
         return $this->render('reservation/new.html.twig', [
-            'form' => $form,
+            'form' => $form->createView(),
             'logement' => $logement,
         ]);
     }

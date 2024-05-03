@@ -2,14 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\ReservationRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Repository\DisponibiliteRepository;
 use Doctrine\ORM\Mapping as ORM;
 use DateTime;
 
-#[ORM\Entity(repositoryClass: ReservationRepository::class)]
-class Reservation
+#[ORM\Entity(repositoryClass: DisponibiliteRepository::class)]
+class Disponibilite
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -22,16 +20,8 @@ class Reservation
     #[ORM\Column(length: 255)]
     private ?DateTime $date_fin = null;
 
-    #[ORM\ManyToOne(inversedBy: 'reservations')]
+    #[ORM\ManyToOne(inversedBy: 'disponibilites')]
     private ?Logement $logement = null;
-
-    #[ORM\ManyToOne(inversedBy: 'reservations')]
-    private ?User $user = null;
-
-
-    public function __construct()
-    {
-    }
 
     public function getId(): ?int
     {
@@ -43,7 +33,7 @@ class Reservation
         return $this->date_debut;
     }
 
-    public function setDateDebut(?DateTime $date_debut): static
+    public function setDateDebut(DateTime $date_debut): static
     {
         $this->date_debut = $date_debut;
 
@@ -55,13 +45,12 @@ class Reservation
         return $this->date_fin;
     }
 
-    public function setDateFin(?DateTime $date_fin): static
+    public function setDateFin(DateTime $date_fin): static
     {
         $this->date_fin = $date_fin;
 
         return $this;
     }
-
 
     public function getLogement(): ?Logement
     {
@@ -71,18 +60,6 @@ class Reservation
     public function setLogement(?Logement $logement): static
     {
         $this->logement = $logement;
-
-        return $this;
-    }
-
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): static
-    {
-        $this->user = $user;
 
         return $this;
     }

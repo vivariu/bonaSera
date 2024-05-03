@@ -14,11 +14,11 @@
             </tr>
             <tr>
                 <th>Date_debut</th>
-                <td>{{ reservation.dateDebut }}</td>
+                <td>{{ reservation.dateDebut | date('Y-m-d') }}</td>
             </tr>
             <tr>
                 <th>Date_fin</th>
-                <td>{{ reservation.dateFin }}</td>
+                <td>{{ reservation.dateFin | date('Y-m-d') }}</td>
             </tr>
              <tr>
                  <th>Logement Id</th>
@@ -31,7 +31,7 @@
                         {{ users.id }} 
                     {% endfor %}
                 </td>
-             </tr>
+             </tr>  
        
         </tbody>
     </table>

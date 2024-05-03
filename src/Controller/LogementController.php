@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Disponibilite;
 use App\Entity\Logement;
+use App\Entity\Reservation;
 use App\Form\LogementType;
 use App\Repository\LogementRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -46,6 +48,7 @@ class LogementController extends AbstractController
         }
 
         $logement = new Logement();
+
         $form = $this->createForm(LogementType::class, $logement);
         $form->handleRequest($request);
 
@@ -61,17 +64,49 @@ class LogementController extends AbstractController
 
         return $this->render('logement/new.html.twig', [
             'logement' => $logement,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 
     #[Route('/{id}', name: 'app_logement_show', methods: ['GET'])]
     public function show(Logement $logement): Response
     {
+        // Obtenir toutes les réservations associées à ce logement
+        $reservations = $this->entityManager->getRepository(Reservation::class)->findBy(['logement' => $logement]);
+
+        // Obtien les plages de dates réservées
+        $reservedDates = [];
+        foreach ($reservations as $reservation) {
+            $reservedDates[] = [
+                'debut' => $reservation->getDateDebut(),
+                'fin' => $reservation->getDateFin(),
+            ];
+        }
+
+        // Filtre les disponibilités qui ne se chevauchent pas avec les réservations
+        $availableDisponibilites = [];
+        foreach ($logement->getDisponibilites() as $disponibilite) {
+            $isReserved = false;
+            foreach ($reservedDates as $reservedDate) {
+                if (
+                    $disponibilite->getDateDebut() <= $reservedDate['fin'] &&
+                    $disponibilite->getDateFin() >= $reservedDate['debut']
+                ) {
+                    $isReserved = true;
+                    break;
+                }
+            }
+            if (!$isReserved) {
+                $availableDisponibilites[] = $disponibilite;
+            }
+        }
+
         return $this->render('logement/show.html.twig', [
             'logement' => $logement,
+            'availableDisponibilites' => $availableDisponibilites,
         ]);
     }
+
 
     #[Route('/{id}/edit', name: 'app_logement_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Logement $logement, EntityManagerInterface $entityManager): Response

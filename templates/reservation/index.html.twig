@@ -18,14 +18,17 @@
         {% for reservation in reservations %}
             <tr>
                 <td>{{ reservation.id }}</td>
-                <td>{{ reservation.dateDebut }}</td>
-                <td>{{ reservation.dateFin }}</td>
-                <td>
-                    <a href="{{ path('app_reservation_show', {'id': reservation.id}) }}">show</a>
-                    <a href="{{ path('app_reservation_edit', {'id': reservation.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
+                {% if availableDisponibilites is defined and availableDisponibilites is not empty %}
+        <ul>
+            {% for disponibilite in availableDisponibilites %}
+                <li>
+                    Du {{ disponibilite.dateDebut | date('Y-m-d') }} au {{ disponibilite.dateFin | date('Y-m-d') }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        Aucune disponibilité
+    {% endif %}
             <tr>
                 <td colspan="4">no records found</td>
             </tr>

@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Disponibilite{% endblock %}
+
+{% block body %}
+    <h1>Disponibilite</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ disponibilite.id }}</td>
+            </tr>
+            <tr>
+                <th>Date_debut</th>
+                <td>{{ disponibilite.dateDebut }}</td>
+            </tr>
+            <tr>
+                <th>Date_fin</th>
+                <td>{{ disponibilite.dateFin }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_disponibilite_index') }}">back to list</a>
+
+    <a href="{{ path('app_disponibilite_edit', {'id': disponibilite.id}) }}">edit</a>
+
+    {{ include('disponibilite/_delete_form.html.twig') }}
+{% endblock %}

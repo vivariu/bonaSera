@@ -27,6 +27,22 @@
                 <th>Nb_salle_de_bain</th>
                 <td>{{ logement.nbSalleDeBain }}</td>
             </tr>
+              <tr>
+                <th>Disponibilités</th>
+                <td>
+                    {% if logement.disponibilites is defined and logement.disponibilites is not empty %}
+                        <ul>
+                            {% for disponibilite in logement.disponibilites %}
+                                <li>
+                                    Du {{ disponibilite.dateDebut | date('Y-m-d')}} au {{ disponibilite.dateFin | date('Y-m-d') }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        Aucune disponibilité
+                    {% endif %}
+                </td>
+            </tr>
         </tbody>
     </table>
 

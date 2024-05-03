@@ -14,9 +14,9 @@
                 <th>Nb_voyageur</th>
                 <th>Nb_chambre</th>
                 <th>Nb_salle_de_bain</th>
-       
+                <th>Date_debut</th>
+                <th>Date_fin</th>
                 <th>actions</th>
-
             </tr>
         </thead>
         <tbody>
@@ -27,12 +27,15 @@
                 <td>{{ logement.nbVoyageur }}</td>
                 <td>{{ logement.nbChambre }}</td>
                 <td>{{ logement.nbSalleDeBain }}</td>
-{#                 
-                <td>{% if logement.user is not null %}
-                <td>{{ logement.user.email }}</td>
-                     {% endif %}
-                </td> #}
-
+                   
+                    {% if logement.disponibilites is defined and logement.disponibilites is not empty %}
+                            {% for disponibilite in logement.disponibilites %}
+                                    <td> {{ disponibilite.dateDebut | date('Y-m-d') }}</td>
+                                    <td>{{ disponibilite.dateFin | date('Y-m-d') }}</td>
+                            {% endfor %}
+                  
+                    {% endif %}
+               
                 <td>
 
                     <a href="{{ path('app_logement_show', {'id': logement.id}) }}">show</a>

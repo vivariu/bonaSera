@@ -29,7 +29,6 @@ class HomeController extends AbstractController
             throw $this->createAccessDeniedException("Vous devez être connecté pour accéder à cette page.");
         }
 
-
         $logements = $logementRepository->findAll();
 
 
