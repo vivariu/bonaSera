@@ -24,15 +24,10 @@ class HomeController extends AbstractController
     #[Route('/', name: 'app_home')]
     public function index(LogementRepository $logementRepository, ReservationRepository $reservationRepository): Response
     {
-        $user = $this->security->getUser(); // Obtenir l'utilisateur connecté
-        if (!$user) {
-            throw $this->createAccessDeniedException("Vous devez être connecté pour accéder à cette page.");
-        }
 
         $logements = $logementRepository->findAll();
 
-
-        $reservations = $reservationRepository->findBy(['user' => $user]);
+        $reservations = $reservationRepository->findBy(['user' => $this->security->getUser()]);
 
         return $this->render('home/index.html.twig', [
             'logements' => $logements,

@@ -4,37 +4,37 @@
 
 {% block body %}
     <h1>Reservation index</h1>
-
-    <table class="table">
+    
+    <table>
         <thead>
             <tr>
                 <th>Id</th>
-                <th>Date_debut</th>
-                <th>Date_fin</th>
-                <th>actions</th>
+                <th>Date début</th>
+                <th>Date fin</th>
+                <th>Prix par nuit</th>
+                <th>Logement</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-        {% for reservation in reservations %}
-            <tr>
-                <td>{{ reservation.id }}</td>
-                {% if availableDisponibilites is defined and availableDisponibilites is not empty %}
-        <ul>
-            {% for disponibilite in availableDisponibilites %}
-                <li>
-                    Du {{ disponibilite.dateDebut | date('Y-m-d') }} au {{ disponibilite.dateFin | date('Y-m-d') }}
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        Aucune disponibilité
-    {% endif %}
-            <tr>
-                <td colspan="4">no records found</td>
-            </tr>
-        {% endfor %}
+            {% if reservations is defined and reservations is not empty %}
+                {% for reservation in reservations %}
+                    <tr>
+                        <td>{{ reservation.id }}</td>
+                        <td>{{ reservation.dateDebut | date('d-m-Y') }}</td>
+                        <td>{{ reservation.dateFin | date('d-m-Y') }}</td>
+                        <td>{{ reservation.logement.id }}</td>
+                        
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="4">Aucune réservation trouvée.</td>
+                </tr>
+            {% endif %}
+             
         </tbody>
     </table>
-
-    {# <a href="{{ path('app_reservation_new') }}">Create new</a> #}
+    
+ 
 {% endblock %}

@@ -16,6 +16,7 @@
                 <th>Nb_salle_de_bain</th>
                 <th>Date_debut</th>
                 <th>Date_fin</th>
+                <th>Prix par nuit</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -32,6 +33,7 @@
                             {% for disponibilite in logement.disponibilites %}
                                     <td> {{ disponibilite.dateDebut | date('Y-m-d') }}</td>
                                     <td>{{ disponibilite.dateFin | date('Y-m-d') }}</td>
+                                    <td>{{ disponibilite.prix }}</td>
                             {% endfor %}
                   
                     {% endif %}

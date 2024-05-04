@@ -23,6 +23,9 @@ class Disponibilite
     #[ORM\ManyToOne(inversedBy: 'disponibilites')]
     private ?Logement $logement = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $prix = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -60,6 +63,18 @@ class Disponibilite
     public function setLogement(?Logement $logement): static
     {
         $this->logement = $logement;
+
+        return $this;
+    }
+
+    public function getPrix(): ?string
+    {
+        return $this->prix;
+    }
+
+    public function setPrix(string $prix): static
+    {
+        $this->prix = $prix;
 
         return $this;
     }

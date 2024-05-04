@@ -26,19 +26,13 @@ class LogementType extends AbstractType
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false,
+                'label' => false,
                 'attr' => [
-                    'data-controller' => 'form-collection'
-                ]
-            ]);
+                    'data-controller' => 'form-collection',
 
+                ],
 
-
-
-            // ->add('user', EntityType::class, [
-            //     'class' => User::class,
-            //     'choice_label' => 'email'
-            // ]);
-        ;
+            ]);;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

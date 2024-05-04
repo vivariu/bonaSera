@@ -32,7 +32,7 @@ class LogementController extends AbstractController
     {
         $user = $this->security->getUser();
         if (!$user) {
-            throw $this->createAccessDeniedException("Vous n'avez pas accès à cette page.");
+            return $this->redirectToRoute('app_login');
         }
         $logements = $logementRepository->findBy(['user' => $user]); //récupère uniquement les logements de l'user connecté
         return $this->render('logement/index.html.twig', [
@@ -82,7 +82,6 @@ class LogementController extends AbstractController
                 'fin' => $reservation->getDateFin(),
             ];
         }
-
         // Filtre les disponibilités qui ne se chevauchent pas avec les réservations
         $availableDisponibilites = [];
         foreach ($logement->getDisponibilites() as $disponibilite) {

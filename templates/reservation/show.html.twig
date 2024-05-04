@@ -14,24 +14,24 @@
             </tr>
             <tr>
                 <th>Date_debut</th>
-                <td>{{ reservation.dateDebut | date('Y-m-d') }}</td>
+                <td>{{ reservation.dateDebut | date('d-m-Y') }}</td>
             </tr>
             <tr>
                 <th>Date_fin</th>
-                <td>{{ reservation.dateFin | date('Y-m-d') }}</td>
+                <td>{{ reservation.dateFin | date('d-m-Y') }}</td>
             </tr>
              <tr>
                  <th>Logement Id</th>
                 <td>{{ reservation.logement.id }}</td> 
             </tr>
-            <tr>
+              <tr>
                 <th>Utilisateur</th>
-                 <td>
-                    {% for users in reservation.user %}
-                        {{ users.id }} 
-                    {% endfor %}
-                </td>
-             </tr>  
+                <td>{{ reservation.user.id }}</td>      
+            </tr>
+            <tr>
+                <th>Prix Total</th> 
+                <td>{{ total_price }} €</td>
+            </tr>
        
         </tbody>
     </table>

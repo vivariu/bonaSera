@@ -29,15 +29,20 @@
             </tr>
               <tr>
                 <th>Disponibilités</th>
-                <td>
                     {% if logement.disponibilites is defined and logement.disponibilites is not empty %}
-                        <ul>
-                            {% for disponibilite in logement.disponibilites %}
-                                <li>
-                                    Du {{ disponibilite.dateDebut | date('Y-m-d')}} au {{ disponibilite.dateFin | date('Y-m-d') }}
-                                </li>
-                            {% endfor %}
-                        </ul>
+                    {% for disponibilite in logement.disponibilites %}
+                               
+                <td>{{ disponibilite.dateDebut | date('d-m-Y')}}</td>
+                </br>
+                <td>{{ disponibilite.dateFin | date('d-m-Y') }}</td>
+             </tr>
+                <tr>
+                    <th>Prix par nuit</th>
+                <td> {{ disponibilite.prix}} </td>    
+
+                </tr> 
+                 {% endfor %}
+                        
                     {% else %}
                         Aucune disponibilité
                     {% endif %}
@@ -45,10 +50,10 @@
             </tr>
         </tbody>
     </table>
+     <a href="{{ path('app_reservation_new', { 'logementId': logement.id }) }}">Réserver ce logement</a>
+    <a href="{{ path('app_home') }}">back to list</a>
 
-    <a href="{{ path('app_logement_index') }}">back to list</a>
+    {# <a href="{{ path('app_logement_edit', {'id': logement.id}) }}">edit</a> #}
 
-    <a href="{{ path('app_logement_edit', {'id': logement.id}) }}">edit</a>
-
-    {{ include('logement/_delete_form.html.twig') }}
+    {# {{ include('logement/_delete_form.html.twig') }} #}
 {% endblock %}

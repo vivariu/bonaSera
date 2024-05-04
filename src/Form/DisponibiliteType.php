@@ -15,7 +15,9 @@ class DisponibiliteType extends AbstractType
     {
         $builder
             ->add('date_debut')
-            ->add('date_fin');
+            ->add('date_fin')
+            ->add('prix');
+
         // ->add('logement', EntityType::class, [
         //     'class' => Logement::class,
         //     'choice_label' => 'id',

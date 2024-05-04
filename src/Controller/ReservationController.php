@@ -33,11 +33,17 @@ class ReservationController extends AbstractController
 
         $user = $this->security->getUser();
         if (!$user) {
-            throw $this->createAccessDeniedException("Vous n'avez pas accès à cette page.");
+            return $this->redirectToRoute('app_login');
         }
         $reservations = $reservationRepository->findBy(['user' => $user]);
+        $logements = [];
+        foreach ($reservations as $reservation) {
+            $logements[] = $reservation->getLogement(); // Récupère le logement associé
+        }
+
         return $this->render('reservation/index.html.twig', [
             'reservations' => $reservations, //logements de l'user
+
         ]);
     }
 
@@ -46,13 +52,9 @@ class ReservationController extends AbstractController
     #[Route('/new/{logementId}', name: 'app_reservation_new')]
     public function newId(Request $request, EntityManagerInterface $entityManager, $logementId): Response
     {
-        if (!$this->isGranted('IS_AUTHENTICATED_FULLY')) {  // redirige vers la page de connexion si pas d'utilisateur connecté
+        // redirige vers la page de connexion si pas d'utilisateur connecté
+        if (!$this->isGranted('IS_AUTHENTICATED_FULLY')) {
             return $this->redirectToRoute('app_login');
-        }
-
-        $user = $this->security->getUser(); // Obtenir l'utilisateur connecté
-        if (!$user) {
-            throw $this->createAccessDeniedException("Utilisateur non trouvé.");
         }
 
         $logement = $this->entityManager->getRepository(Logement::class)->find($logementId);
@@ -73,8 +75,12 @@ class ReservationController extends AbstractController
         $form = $this->createForm(ReservationType::class, $reservation);
         $form->handleRequest($request);
 
+        $errorMessage = null;
+        $totalPrice = 0;
+
+
         if ($form->isSubmitted() && $form->isValid()) {
-            // Vérifie si les dates proposées ne chevauchent pas les réservations existantes
+            // Vérifie si les dates proposé ne chevauche pas les réservations existantes
             $dateDebut = $reservation->getDateDebut();
             $dateFin = $reservation->getDateFin();
 
@@ -83,32 +89,37 @@ class ReservationController extends AbstractController
                     $dateDebut <= $reservedDate['fin'] &&
                     $dateFin >= $reservedDate['debut']
                 ) {
-                    throw $this->createAccessDeniedException("Les dates choisies sont déjà réservées.");
+                    $errorMessage = "Les dates choisies sont déjà réservées.";
                 }
             }
+            if (!$errorMessage) {
+                $totalPrice = $this->calculateTotalPrice($reservation, $logement);
+                $reservation->setLogement($logement);
+                $reservation->setUser($this->security->getUser());
+                $entityManager->persist($reservation);
+                $entityManager->flush();
 
-
-            $reservation->setLogement($logement);
-            $reservation->setUser($this->security->getUser());
-            $entityManager->persist($reservation);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_reservation_show', ['id' => $reservation->getId()]);
+                return $this->redirectToRoute('app_reservation_show', ['id' => $reservation->getId()]);
+            }
         }
-
         return $this->render('reservation/new.html.twig', [
             'form' => $form->createView(),
             'logement' => $logement,
+            'error_message' => $errorMessage,
+            'total_price' => $totalPrice,
+
         ]);
     }
 
     #[Route('/{id}', name: 'app_reservation_show', methods: ['GET'])]
     public function show(Reservation $reservation): Response
     {
+        $totalPrice = $this->calculateTotalPrice($reservation, $reservation->getLogement());
 
         return $this->render('reservation/show.html.twig', [
             'reservation' => $reservation,
-            'logement' => $reservation->getLogement() //logement associé    
+            'logement' => $reservation->getLogement(), //logement associé  
+            'total_price' => $totalPrice,
 
         ]);
     }
@@ -140,5 +151,28 @@ class ReservationController extends AbstractController
         }
 
         return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    public function calculateTotalPrice(Reservation $reservation, Logement $logement): float
+    {
+        $dateDebut = $reservation->getDateDebut();
+        $dateFin = $reservation->getDateFin();
+
+        $totalPrice = 0;
+
+        foreach ($logement->getDisponibilites() as $disponibilité) {
+            if (
+                $disponibilité->getDateDebut() <= $dateFin &&
+                $disponibilité->getDateFin() >= $dateDebut
+            ) {
+                $overlapStart = max($dateDebut, $disponibilité->getDateDebut());
+                $overlapEnd = min($dateFin, $disponibilité->getDateFin());
+
+                $numberOfDays = $overlapEnd->diff($overlapStart)->days + 1;
+                $totalPrice += $numberOfDays * $disponibilité->getPrix();
+            }
+        }
+
+        return $totalPrice;
     }
 }
