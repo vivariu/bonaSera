@@ -43,10 +43,22 @@ class Logement
     private Collection $disponibilites;
 
 
+    /**
+     * @var Collection<int, Image>
+     */
+    #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'logements', cascade: ['persist'])]
+    private Collection $images;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Adresse $adresse = null;
+
+
+
     public function __construct()
     {
         $this->reservations = new ArrayCollection();
         $this->disponibilites = new ArrayCollection();
+        $this->images = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -170,6 +182,48 @@ class Logement
                 $disponibilite->setLogement(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Image>
+     */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(Image $image): static
+    {
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
+            $image->setLogements($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Image $image): static
+    {
+        if ($this->images->removeElement($image)) {
+            // set the owning side to null (unless already changed)
+            if ($image->getLogements() === $this) {
+                $image->setLogements(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getAdresse(): ?Adresse
+    {
+        return $this->adresse;
+    }
+
+    public function setAdresse(?Adresse $adresse): static
+    {
+        $this->adresse = $adresse;
 
         return $this;
     }

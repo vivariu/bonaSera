@@ -2,32 +2,29 @@
 
 namespace App\Form;
 
-use App\Entity\Reservation;
-use App\Entity\User;
+use App\Entity\Image;
+use App\Entity\Logement;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class UserType extends AbstractType
+class ImageType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('email')
-            ->add('roles')
-            ->add('password')
-            ->add('reservations', EntityType::class, [
-                'class' => Reservation::class,
+            ->add('filename')
+            ->add('logements', EntityType::class, [
+                'class' => Logement::class,
                 'choice_label' => 'id',
-                'multiple' => true,
             ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => User::class,
+            'data_class' => Image::class,
         ]);
     }
 }

@@ -1,18 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Disponibilite{% endblock %}
+    {% block title %}New Disponibilite{% endblock %}
 
-{% block body %}
-    <h1>Create new Disponibilite</h1>
+    {% block body %}
+        <h1>Create new Disponibilite</h1>
 
-       {# Afficher le message d'erreur si défini #}
-    {% if error_message is defined and error_message is not empty %}
-        <div class="alert alert-danger">
-            {{ error_message }}
-        </div>
-    {% endif %}
+        {{ include('disponibilite/_form.html.twig') }}
 
-    {{ include('disponibilite/_form.html.twig') }}
-
-    <a href="{{ path('app_disponibilite_index') }}">back to list</a>
-{% endblock %}
+        <a href="{{ path('app_disponibilite_index') }}">back to list</a>
+    {% endblock %}

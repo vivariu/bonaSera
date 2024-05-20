@@ -1,13 +1,77 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Logement{% endblock %}
-
 {% block body %}
-    <h1>Edit Logement</h1>
+    <div class="d-flex justify-content-center align-items-center" style="height: 100vh; background-color: #f8f9fa;">
+        <div class="container" style="width: 100%; max-width: 800px;">
+            <div class="form-container" style="height: 80vh; overflow-y: auto; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); background-color: white; padding: 20px;">
+                <h1 class="text-center">Modifier le logement</h1>
 
-    {{ include('logement/_form.html.twig', {'button_label': 'Update'}) }}
+                {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
 
-    <a href="{{ path('app_logement_index') }}">back to list</a>
+                <div class="form-group">
+                    {{ form_label(form.type, 'Type de logement', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.type, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.type, {'attr': {'class': 'text-danger'}}) }}
+                </div>
 
-    {{ include('logement/_delete_form.html.twig') }}
+                <div class="form-group">
+                    {{ form_label(form.nb_voyageur, 'Nombre de voyageurs', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.nb_voyageur, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.nb_voyageur, {'attr': {'class': 'text-danger'}}) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.nb_chambre, 'Nombre de chambres', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.nb_chambre, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.nb_chambre, {'attr': {'class': 'text-danger'}}) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.nb_salle_de_bain, 'Nombre de salles de bain', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.nb_salle_de_bain, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.nb_salle_de_bain, {'attr': {'class': 'text-danger'}}) }}
+                </div>
+
+                <div class="form-group">
+                    <h2>Images actuelles</h2>
+                    {% for image in logement.images %}
+                        <div>
+                            <img src="{{ asset('assets/uploads/logement/mini/300x300-' ~ image.filename) }}" alt="Image" width="150" />
+                            <a href="#" onclick="deleteImage({{ image.id }}, '{{ csrf_token('delete' ~ image.id) }}')">Supprimer</a>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100">Mettre à jour</button>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    function deleteImage(imageId, tokenId) {
+        if (confirm('Êtes-vous sur de vouloir supprimer cette image ?')) {
+            fetch("{{ path('app_image_delete', {'id': 'imageId'}) }}".replace('imageId', imageId), {
+                method: 'POST',
+                body: JSON.stringify({ '_token': tokenId }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();  
+                } else {
+                    throw new Error('Erreur lors de la suppression de l\'image');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                
+            });
+        }
+    }
+</script>
 {% endblock %}

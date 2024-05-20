@@ -4,11 +4,12 @@
 
 {% block body %}
 <div class="container">
-    <h1>Logement Index</h1>
+
         
     <div class="row">
     {% for logement in logements %}
     <div class="col-md-4"> 
+    <a href="{{ path('app_logement_show', {'id': logement.id}) }}" style="text-decoration: none; color: inherit;">
     <div class="card">
      <div class="card-header">{{ logement.type }}</div>
       <div class="card-body">
@@ -38,7 +39,8 @@
          <p class="card-text">Nombre de salles de bain: {{ logement.nbSalleDeBain }}</p>
                             
         <a href="{{ path('app_logement_show', {'id': logement.id}) }}" class="btn btn-primary">Voir</a>
-        <a href="{{ path('app_logement_edit', {'id': logement.id}) }}" class="btn btn-secondary">Modifier</a>
+           <a href="{{ path('app_reservation_new', { 'logementId': logement.id }) }}">Réserver ce logement</a>
+    
         </div>
         </div> 
         </div>

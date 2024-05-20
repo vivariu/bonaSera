@@ -3,46 +3,57 @@
 {% block title %}Logement{% endblock %}
 
 {% block body %}
-    <h1>Logement</h1>
+<div class="container">
+    <h1>{{ logement.type }}</h1>
+<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        {% for image in logement.images %}
+            <div class="carousel-item {% if loop.first %}active{% endif %}">
+                <img src="{{ asset('assets/uploads/logement/' ~ image.getFilename()) }}" class="d-block w-100" alt="..." style="width: 400px; height: 400px; object-fit: cover;">
+            </div>
+        {% endfor %}
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
 
-    <table class="table">
+    <table class="table mt-4">
         <tbody>
             <tr>
-                <th>Id</th>
+                <th scope="row">Id</th>
                 <td>{{ logement.id }}</td>
             </tr>
             <tr>
-                <th>Type</th>
+                <th scope="row">Type</th>
                 <td>{{ logement.type }}</td>
             </tr>
             <tr>
-                <th>Nb_voyageur</th>
+                <th scope="row">Nombre de voyageurs</th>
                 <td>{{ logement.nbVoyageur }}</td>
             </tr>
             <tr>
-                <th>Nb_chambre</th>
+                <th scope="row">Nombre de chambres</th>
                 <td>{{ logement.nbChambre }}</td>
             </tr>
             <tr>
-                <th>Nb_salle_de_bain</th>
+                <th scope="row">Nombre de salles de bain</th>
                 <td>{{ logement.nbSalleDeBain }}</td>
             </tr>
-              <tr>
-                <th>Disponibilités</th>
-                    {% if logement.disponibilites is defined and logement.disponibilites is not empty %}
-                    {% for disponibilite in logement.disponibilites %}
-                               
-                <td>{{ disponibilite.dateDebut | date('d-m-Y')}}</td>
-                </br>
-                <td>{{ disponibilite.dateFin | date('d-m-Y') }}</td>
-             </tr>
-                <tr>
-                    <th>Prix par nuit</th>
-                <td> {{ disponibilite.prix}} </td>    
-
-                </tr> 
-                 {% endfor %}
-                        
+            <tr>
+                <th scope="row">Disponibilités</th>
+                <td>
+                    {% if availableDisponibilites %}
+                        <ul>
+                            {% for disponibilite in availableDisponibilites %}
+                                <li>{{ disponibilite.dateDebut|date('d-m-Y') }} - {{ disponibilite.dateFin|date('d-m-Y') }}</li>
+                            {% endfor %}
+                        </ul>
                     {% else %}
                         Aucune disponibilité
                     {% endif %}
@@ -50,10 +61,8 @@
             </tr>
         </tbody>
     </table>
-     <a href="{{ path('app_reservation_new', { 'logementId': logement.id }) }}">Réserver ce logement</a>
-    <a href="{{ path('app_home') }}">back to list</a>
 
-    {# <a href="{{ path('app_logement_edit', {'id': logement.id}) }}">edit</a> #}
-
-    {# {{ include('logement/_delete_form.html.twig') }} #}
+    <a href="{{ path('app_reservation_new', { 'logementId': logement.id }) }}" class="btn btn-primary">Réserver ce logement</a>
+    <a href="{{ path('app_home') }}" class="btn btn-secondary">Retour à la liste</a>
+</div>
 {% endblock %}

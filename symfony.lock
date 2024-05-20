@@ -26,6 +26,9 @@
             "migrations/.gitignore"
         ]
     },
+    "ivory/google-map-bundle": {
+        "version": "6.1.1"
+    },
     "phpunit/phpunit": {
         "version": "9.6",
         "recipe": {
@@ -247,6 +250,9 @@
             "config/packages/twig.yaml",
             "templates/base.html.twig"
         ]
+    },
+    "symfony/ux-dropzone": {
+        "version": "v2.17.0"
     },
     "symfony/ux-turbo": {
         "version": "v2.17.0"

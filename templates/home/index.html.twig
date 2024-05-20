@@ -49,8 +49,9 @@
 <h2>Logements disponibles</h2>
 <ul>
     {% for logement in logements %}
+    
         <li>
-            <a href="{{ path('app_logement_show', { 'id': logement.id }) }}">{{ logement.id }}</a>
+            <a href="{{ path('app_logement_all')}}">Voir</a>
             <a href="{{ path('app_reservation_new', { 'logementId': logement.id }) }}">Réserver ce logement</a>
 
         </li>

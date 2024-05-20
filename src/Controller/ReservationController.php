@@ -78,7 +78,6 @@ class ReservationController extends AbstractController
         $errorMessage = null;
         $totalPrice = 0;
 
-
         if ($form->isSubmitted() && $form->isValid()) {
             // Vérifie si les dates proposé ne chevauche pas les réservations existantes
             $dateDebut = $reservation->getDateDebut();
@@ -165,10 +164,10 @@ class ReservationController extends AbstractController
                 $disponibilité->getDateDebut() <= $dateFin &&
                 $disponibilité->getDateFin() >= $dateDebut
             ) {
-                $overlapStart = max($dateDebut, $disponibilité->getDateDebut());
-                $overlapEnd = min($dateFin, $disponibilité->getDateFin());
+                $start = max($dateDebut, $disponibilité->getDateDebut());
+                $end = min($dateFin, $disponibilité->getDateFin());
 
-                $numberOfDays = $overlapEnd->diff($overlapStart)->days + 1;
+                $numberOfDays = $end->diff($start)->days + 1;
                 $totalPrice += $numberOfDays * $disponibilité->getPrix();
             }
         }
