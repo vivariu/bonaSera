@@ -1,8 +1,9 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+
 <div class="d-flex justify-content-center align-items-center" style="height: 100vh; background-color: #f8f9fa;">
-    <div class="container" style="width: 100%; max-width: 600px;">
+    <div class="container" style="width: 100%; max-width: 700px;">
         <div class="form-container" style="height: 80vh; overflow-y: auto; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); background-color: white; padding: 20px;">
             <h1 class="text-center">Créer un nouveau logement</h1>
 
@@ -56,9 +57,29 @@
                 <!-- Onglet Adresse -->
                 <div class="tab-pane fade" id="adresse" role="tabpanel" aria-labelledby="adresse-tab">
                     <div class="form-group">
-                        {{ form_label(form.adresse, 'Adresse', {'label_attr': {'class': 'form-label'}}) }}
-                        {{ form_widget(form.adresse, {'attr': {'class': 'form-control'}}) }}
-                        {{ form_errors(form.adresse, {'attr': {'class': 'text-danger'}}) }}
+                       <gmpx-api-loader key="AIzaSyBcaIRjtCxnuw6AbV1dgv0stoyqjueMnG8" solution-channel="GMP_QB_addressselection_v3_cABC">
+                 </gmpx-api-loader>
+                <gmpx-split-layout row-layout-min-width="600">
+                <div class="panel" slot="fixed">
+                    <div>
+                    <img class="sb-title-icon" src="https://fonts.gstatic.com/s/i/googlematerialicons/location_pin/v5/24px.svg" alt="">
+                    <span class="sb-title">Address Selection</span>
+                    </div>
+                    <input type="text" placeholder="Adresse..." id="location-input" required/>
+                    {# <input type="text" placeholder="Apt, Suite, etc (optional)"/> #}
+                    <input type="text" placeholder="Ville, village..." id="locality-input" required/>
+                    <div class="half-input-container">
+                    {# <input type="text" class="half-input" placeholder="State/Province" id="administrative_area_level_1-input"/> #}
+                    <input type="text" class="half-input" placeholder="Code Postal..." id="postal_code-input" required/>
+                    </div>
+                    {# <input type="text" placeholder="Country" id="country-input"/> #}
+                <gmpx-icon-button variant="filled">Checkout</gmpx-icon-button>
+                <button type="button" onclick="saveAddress()">Enregistrer mon adresse</button>
+                </div>
+                <gmp-map slot="main">
+                    <gmp-advanced-marker></gmp-advanced-marker>
+                </gmp-map>
+                </gmpx-split-layout>
                     </div>
                 </div>
 
@@ -89,5 +110,203 @@
         </div>
     </div>
 </div>
+ <script type="module">
+      "use strict";
+    
+      // This loads helper components from the Extended Component Library,
+      // https://github.com/googlemaps/extended-component-library.
+      // Please note unpkg.com is unaffiliated with Google Maps Platform.
+      import {APILoader} from 'https://unpkg.com/@googlemaps/extended-component-library@0.6';
+
+      const CONFIGURATION = {
+        "ctaTitle": "Checkout",
+        "mapOptions": {"center":{"lat":42.039604,"lng":9.012893},"fullscreenControl":true,"mapTypeControl":false,"streetViewControl":true,"zoom":8  ,"zoomControl":true,"maxZoom":22,"mapId":""},
+        "mapsApiKey": "AIzaSyBcaIRjtCxnuw6AbV1dgv0stoyqjueMnG8",
+        "capabilities": {"addressAutocompleteControl":true,"mapDisplayControl":true,"ctaControl":true}
+      };
+
+      const SHORT_NAME_ADDRESS_COMPONENT_TYPES =
+          new Set(['street_number', 'administrative_area_level_1', 'postal_code']);
+
+      const ADDRESS_COMPONENT_TYPES_IN_FORM = [
+        'location', 
+        'locality',
+        'administrative_area_level_1',
+        'postal_code',
+        'country',
+      ];
+
+      function getFormInputElement(componentType) {
+        return document.getElementById(`${componentType}-input`);
+      }
+
+      function fillInAddress(place) {
+        function getComponentName(componentType) {
+          for (const component of place.address_components || []) {
+            if (component.types[0] === componentType) {
+              return SHORT_NAME_ADDRESS_COMPONENT_TYPES.has(componentType) ?
+                  component.short_name :
+                  component.long_name;
+            }
+          }
+          return '';
+        }
+
+        function getComponentText(componentType) {
+          return (componentType === 'location') ?
+              `${getComponentName('street_number')} ${getComponentName('route')}` :
+              getComponentName(componentType);
+        }
+
+        for (const componentType of ADDRESS_COMPONENT_TYPES_IN_FORM) {
+          getFormInputElement(componentType).value = getComponentText(componentType);
+        }
+      }
+
+      function renderAddress(place) {
+        const mapEl = document.querySelector('gmp-map');
+        const markerEl = document.querySelector('gmp-advanced-marker');
+
+        if (place.geometry && place.geometry.location) {
+          mapEl.center = place.geometry.location;
+          markerEl.position = place.geometry.location;
+        } else {
+          markerEl.position = null;
+        }
+      }
+
+
+      async function initMap() {
+        const {Autocomplete} = await APILoader.importLibrary('places');
+
+        const mapOptions = CONFIGURATION.mapOptions;
+        mapOptions.mapId = mapOptions.mapId || 'DEMO_MAP_ID';
+        mapOptions.center = mapOptions.center || {lat: 37.4221, lng: -122.0841};
+
+        await customElements.whenDefined('gmp-map');
+        document.querySelector('gmp-map').innerMap.setOptions(mapOptions);
+        const autocomplete = new Autocomplete(getFormInputElement('location'), {
+          fields: ['address_components', 'geometry', 'name'],
+          types: ['address'],
+        });
+
+        autocomplete.addListener('place_changed', () => {
+          const place = autocomplete.getPlace();
+          if (!place.geometry) {
+            // User entered the name of a Place that was not suggested and
+            // pressed the Enter key, or the Place Details request failed.
+            window.alert(`No details available for input: '${place.name}'`);
+            return;
+          }
+          renderAddress(place);
+          fillInAddress(place);
+        });
+      }
+
+      initMap();
+    </script>
+    <script type="text/javascript">
+        function saveAddress() { 
+            var rue = document.getElementById('location-input').value;
+            var ville = document.getElementById('locality-input').value;
+            var codePostal = document.getElementById('postal_code-input').value;
+
+            var data = {
+                rue: rue,
+                ville: ville,
+                code_postal: codePostal
+            
+            };
+
+            fetch('/adresse/new', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur sauvegade adresse');
+                }
+                return response.text();
+            })
+            .then(result => {
+                console.log(result); 
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+            
+            });
+        }
+    </script>
+    <style>
+    body {
+  margin: 0;
+}
+
+.sb-title {
+  position: relative;
+  top: -12px;
+  font-family: Roboto, sans-serif;
+  font-weight: 500;
+}
+
+.sb-title-icon {
+  position: relative;
+  top: -5px;
+}
+
+gmpx-split-layout {
+  height: 500px;
+  width: 600px;
+}
+
+gmpx-split-layout:not(:defined) {
+  visibility: hidden;
+}
+
+.panel {
+  background: white;
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.half-input-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.half-input {
+  max-width: 120px;
+}
+
+h2 {
+  margin: 0;
+  font-family: Roboto, sans-serif;
+}
+
+input {
+  height: 30px;
+}
+
+input {
+  border: 0;
+  border-bottom: 1px solid black;
+  font-size: 14px;
+  font-family: Roboto, sans-serif;
+  font-style: normal;
+  font-weight: normal;
+}
+
+input:focus::placeholder {
+  color: white;
+}
+</style>
 {% endblock %}
 

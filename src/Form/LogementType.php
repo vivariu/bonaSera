@@ -28,7 +28,6 @@ class LogementType extends AbstractType
                 'required' => true,
             ])
 
-            ->add('adresse', AdresseType::class)
             ->add('nb_voyageur', ChoiceType::class, [
                 'choices' => array_combine(range(1, 12), range(1, 12)),
                 'required' => true,

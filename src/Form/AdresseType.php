@@ -14,8 +14,7 @@ class AdresseType extends AbstractType
         $builder
             ->add('rue')
             ->add('ville')
-            ->add('code_postal')
-        ;
+            ->add('code_postal');
     }
 
     public function configureOptions(OptionsResolver $resolver): void

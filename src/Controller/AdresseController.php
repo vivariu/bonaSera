@@ -22,9 +22,25 @@ class AdresseController extends AbstractController
         ]);
     }
 
+
     #[Route('/new', name: 'app_adresse_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+
+        if ($request->isMethod('POST')) {
+            $data = json_decode($request->getContent(), true);
+
+            $adresse = new Adresse();
+            $adresse->setRue($data['rue']);
+            $adresse->setVille($data['ville']);
+            $adresse->setCodePostal($data['code_postal']);
+
+            $entityManager->persist($adresse);
+            $entityManager->flush();
+
+            return new Response('Adresse enregistrée avec succès', Response::HTTP_OK);
+        }
+
         $adresse = new Adresse();
         $form = $this->createForm(AdresseType::class, $adresse);
         $form->handleRequest($request);
@@ -77,26 +93,5 @@ class AdresseController extends AbstractController
         }
 
         return $this->redirectToRoute('app_adresse_index', [], Response::HTTP_SEE_OTHER);
-    }
-
-    #[Route('/save-address', name: 'save_address', methods: ['POST'])]
-    public function saveAddress(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        // Récupérer les données JSON envoyées dans la requête
-        $data = json_decode($request->getContent(), true);
-
-        // Créer une nouvelle instance de l'entité Adresse et définir ses propriétés
-        $adresse = new Adresse();
-        $adresse->setRue($data['rue']);
-        $adresse->setVille($data['ville']);
-        $adresse->setCodePostal($data['code_postal']);
-        // Ajoutez d'autres propriétés si nécessaire
-
-        // Persistez l'entité Adresse dans la base de données
-        $entityManager->persist($adresse);
-        $entityManager->flush();
-
-        // Retourner une réponse HTTP 200 OK avec un message indiquant que l'adresse a été enregistrée avec succès
-        return new Response('Adresse enregistrée avec succès', Response::HTTP_OK);
     }
 }
